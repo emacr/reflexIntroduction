@@ -1,0 +1,235 @@
+#in = begging
+#end = end
+
+git:
+add venv/ into .gitignore cause isnt necesary to commit it
+
+#in
+example 1 using the class state in a buttom
+
+class State(rx.State):
+    """The app state."""
+#'here i can handle some actions for the buttons for exaple'
+    label = 'this is my label and '
+    originalLabel = label
+
+    #funtion that changes the value of the last label clicking a button
+    def changeLabel(self):
+        if self.label == 'this is a new content for my web':
+            self.label = self.originalLabel
+        else:
+            self.label = 'this is a new content for my web' 
+
+   #put an event handler in a button to use the state class
+                rx.button("Click me!", on_click=(State.changeLabel)),
+#end
+
+#in 
+example2 using the onchange event
+
+in the class state:
+    label = 'welcome to reflex
+
+    def handle_title_change(self,value):
+    self.label = value
+
+def index ....
+    rx.heading(State.label,size='9'),
+    rx.input(
+        default_value=state.label,
+        on_change=(State.handle_title_change),
+    )
+#end
+
+#in
+creating a function thats gonna containt a block of code
+
+def base_page(child: rx.component, *args, **kwargs) -> rx.Component:
+    return rx.Container(
+        *args,
+
+        #note: here im gonna put everything i wanna keep in my page no matter where i navegate
+    )
+
+in other funtion like index:
+def index ...
+    return base_page( #call the funtion
+    
+        my code here
+        .....
+        )
+
+#end
+
+#in
+
+better code mantain
+creating components thats gonna have more code so separate it
+
+1. create a folder (ui)
+2. create files inside ui (__init__.py)
+
+3. can create base.py and move the following code:
+def base_page(child: rx.Component, *args, **kwargs) -> rx.Component:
+        return rx.container(
+            navbar(),
+            child,
+            rx.color_mode.button(position="top-left"),
+            rx.logo(),        
+        )
+
+4. now base_page is not in the index file
+so i just import it: from .ui.base import base_page
+and so on
+
+#end
+
+
+#in
+
+identifying render Components in the browser
+
+ first i create a new function:
+ def abou_us() -> rx.Component:
+    my_child = rx.vstack(        
+            rx.heading('About us',size='9'),
+            rx.text(
+                "Here we go!",  
+            ),        
+        spacing="5",
+            justify="center",
+            min_height="85vh",
+            text_align='center',
+            align='center',
+    )
+    return base_page(my_child)
+
+    then i just pass the url at the end:
+    app.add_page(abou_us, route='/about')
+ 
+
+ note: this works only putting /about in the link bar into the browser manually
+and its so dificult to mantain
+
+
+....
+so what can i do its create a new folder = pages
+and then inside: __init__.py  
+
+in __init__.py i add the routes=  
+from .about import abou_us
+from .pricing import pricing_page
+
+#create all method
+__all__ = [
+    'abou_us',
+    'pricing'
+]
+
+so in main page can i call it like: 
+app.add_page(pages.abou_us, route='/about') # i use it this way cause i imported= from . import pages
+
+#end
+
+
+#in
+
+adding the links to the buttons to navegate
+
+creating a text link:
+
+rx.link('go to about', href='/about)
+
+creating a button link:
+ rx.link(
+            rx.button('click here for pricing'), 
+            href='/pricing'
+            ),
+
+
+
+creating an image link:
+
+ rx.link(
+                        rx.image(
+                            src="/favicon.ico",
+                            width="2.25em",
+                            height="auto",
+                            border_radius="25%",
+                    ),
+                    href='/'
+                    ),
+
+#end
+
+
+#in
+
+here another way to put link directions
+the last ones can be dificult to mantain if i write the address incorrectly its not gonna works
+
+better have CONTANTS with the address
+
+ 1. create a folder = navigation
+ 2. create __init__.py
+ 3. create routes.py
+
+ inside routes.py:
+
+ HOME_ROUTE='/'
+ ABOUT_ROUTE='/abou_us'
+ PRICING_ROUTE='/pricing'
+
+add as many routes as you need
+
+4. back to __init__.py
+
+from . import routes
+
+__all__=[
+    routes
+]
+
+
+so now when i nedd to navegate so somewhere i just add:
+
+from . import navegation,pages
+app.add_page(pages.pricing_page, route=navegation.routes.PRICING_ROUTE)
+
+
+
+another issue is when i need to use navegation.routes.PRICING_ROUTE in some parts that doesnt allow links
+for exampe a dropdown menu 
+
+here the solution:
+i can handle the state class with other methods 
+
+1.
+creare state.py
+
+2. after that goes to __init__.py
+and write
+
+from . import routes
+from .state import navState
+
+__all__=[
+    'routes',
+    'navState'
+]
+
+
+
+
+#end
+
+
+#in
+
+Use from . import x for imports from the same directory
+Use from .. import x for imports from the parent directory
+Use from ..module import x for specific imports from parent directory modules
+Always include __init__.py files in each directory that should be treated as a package
+
+#end
+
